@@ -8,6 +8,9 @@ module.exports = {
         "custom-gray-50": "#f7f8fc",
         "custom-gray-100": "#f0f1f6",
       },
+      fontFamily: {
+        lato: ["Lato"],
+      },
     },
   },
   plugins: [],
