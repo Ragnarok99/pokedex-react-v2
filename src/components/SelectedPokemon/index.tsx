@@ -1,15 +1,33 @@
 import React from "react";
-import { useQuery } from "react-query";
-import { getPokemonDetails, getPokemonSpecie } from "../../apis";
+import { useQueries, useQuery, UseQueryResult } from "react-query";
+import {
+  getPokemonDetails,
+  getPokemonSpecie,
+  getPokemonType,
+} from "../../apis";
+
+import { GetPokemonType, Pokemon } from "../../types";
 import { STATS, STAT_COLORS } from "../../constants";
 import { usePokemonChain } from "../../hooks";
 
 import { POKEMON_KEYS } from "../../queryKeys";
-import { Pokemon } from "../../types";
 
 type Props = {
   selectedPokemon?: Pokemon;
 };
+
+interface PokemonTypesQueryArgs {
+  data: GetPokemonType;
+  isLoading: boolean;
+}
+
+function getPokemonWeaknessesFromTypes(
+  pokemonTypesQuery: UseQueryResult<GetPokemonType, unknown>[]
+) {
+  const isLoading = pokemonTypesQuery.some((result) => result.isLoading);
+
+  if (isLoading) return { isLoading, data: null };
+}
 
 export const SelectedPokemon = ({ selectedPokemon }: Props) => {
   const pokemonQuery = useQuery(
@@ -29,6 +47,16 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
     id: pokeSpecie.data?.evolution_chain.url.split("/")[6],
   });
 
+  const queriesTest =
+    pokemonQuery.data?.types.map((type) => ({
+      queryKey: [POKEMON_KEYS.TYPE, type.type.name],
+      queryFn: () => getPokemonType({ id: type.type.url.split("/")[6] }),
+    })) ?? [];
+
+  const pokeTypes = useQueries(queriesTest);
+
+  const weaknesses = getPokemonWeaknessesFromTypes(pokeTypes);
+
   if (!selectedPokemon) return null;
 
   if (pokemonQuery.isLoading || pokeSpecie.isLoading || pokeChain.isLoading) {
@@ -45,7 +73,7 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
         />
       </div>
       <div className="text-center grid gap-1">
-        <span className="blck text-sm text-gray-400 font-extrabold">
+        <span className="blck text-base text-gray-400 font-extrabold">
           #{pokemonQuery.data?.id}
         </span>
         <span className="block text-2xl text-gray-800 font-bold capitalize">

@@ -1,4 +1,5 @@
 import {
+  GetPokemonType,
   Pokemon,
   PokemonEvolutionChain,
   PokemonSpecie,
@@ -7,6 +8,7 @@ import {
 
 import { pokeClient } from "./pokeClient";
 
+// TODO: ALL of these interfaces should be shared and extensible
 interface GetPokemonDetailsArgs {
   id?: string | number;
 }
@@ -19,12 +21,16 @@ interface GetPokemonChainArgs {
   id?: string | number;
 }
 
+interface GetPokemonTypeArgs {
+  id?: string | number;
+}
+
 interface GetPaginatedPokemonsArgs {
   limit?: number;
   offset?: number;
 }
 
-interface GetPaginatedPokemosResponse {
+interface GetPaginatedPokemonsResponse {
   results: SinglePokemon[];
   count?: number;
   next: string | null;
@@ -35,7 +41,7 @@ export const getPaginatedPokemons = async ({
   limit = 10,
   offset = 0,
 }: GetPaginatedPokemonsArgs = {}) => {
-  const response = await pokeClient.get<GetPaginatedPokemosResponse>(
+  const response = await pokeClient.get<GetPaginatedPokemonsResponse>(
     "/pokemon",
     {
       params: { limit, offset },
@@ -63,6 +69,12 @@ export const getPokemonChain = async ({ id }: GetPokemonChainArgs) => {
   const response = await pokeClient.get<PokemonEvolutionChain>(
     `/evolution-chain/${id}`
   );
+
+  return response.data;
+};
+
+export const getPokemonType = async ({ id }: GetPokemonTypeArgs) => {
+  const response = await pokeClient.get<GetPokemonType>(`/type/${id}`);
 
   return response.data;
 };
