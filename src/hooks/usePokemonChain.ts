@@ -8,71 +8,65 @@ import { Chain } from "../types";
 export interface PokemonChain {
   imageURL: string;
   name: string;
-  nextPokemon?: any;
   minLevel: number;
 }
-
 interface UsePokemonEvolutionChainProps {
-  name: string;
-  id: string | number;
+  name?: string;
+  id?: string | number;
+}
+
+interface GetEvolutionChainArgs {
+  nextEvolution: Chain[];
+  evolutionArray: PokemonChain[];
+}
+
+function getEvolutionChain({
+  nextEvolution,
+  evolutionArray,
+}: GetEvolutionChainArgs) {
+  evolutionArray.push({
+    name: nextEvolution[0]?.species.name,
+    imageURL: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${
+      nextEvolution[0]?.species.url.split("/")[6]
+    }.png`,
+    minLevel: nextEvolution[0].evolution_details[0].min_level,
+  });
+
+  if (nextEvolution[0].evolves_to?.length === 0) {
+    return;
+  }
+
+  getEvolutionChain({
+    nextEvolution: nextEvolution[0].evolves_to,
+    evolutionArray,
+  });
 }
 
 export const usePokemonChain = ({
   id,
   name,
 }: UsePokemonEvolutionChainProps) => {
-  const [chain, setChain] = React.useState<any[]>();
-  const [loading, setLoading] = React.useState<boolean>(true);
-
-  const { data } = useQuery(
+  const { data, isLoading } = useQuery(
     [POKEMON_KEYS.POKEMON_CHAIN, name],
     () => getPokemonChain({ id }),
     { enabled: Boolean(id) }
   );
 
-  const pokemonChainArray = [
+  const evolutionArray = [
     {
       name: data?.chain.species.name,
-      imageURL: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`,
+      imageURL: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${
+        data?.chain.species.url.split("/")[6]
+      }.png`,
       minLevel: 0,
     },
-  ];
+  ] as PokemonChain[];
 
-  getEvolutionChain(data?.chain.evolves_to, pokemonChainArray);
+  data &&
+    getEvolutionChain({
+      nextEvolution: data?.chain.evolves_to,
+      evolutionArray,
+    });
 
-  setChain(pokemonChainArray);
-  setLoading(false);
-
-  return { pokemonChain: chain, loading };
+  return { pokemonChain: id ? evolutionArray : null, isLoading };
 };
-
-function getEvolutionChain(pokemonChainArray: any[], nextChain?: Chain) {
-  const [
-    {
-      species: { name, url },
-      evolution_details,
-      evolves_to,
-    },
-  ] = nextChain;
-
-  const nextPokemonInfo = {
-    name,
-    imageURL: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${
-      url.split("/")[url.split("/").length - 2]
-    }.png`,
-    minLevel: evolution_details[0].min_level,
-  };
-
-  if (!pokemonChainArray[pokemonChainArray.length - 1].nextPokemon) {
-    pokemonChainArray[pokemonChainArray.length - 1].nextPokemon =
-      nextPokemonInfo;
-    if (evolves_to.length > 0) {
-      pokemonChainArray.push(nextPokemonInfo);
-    }
-  }
-
-  if (evolves_to.length > 0) getEvolutionChain(evolves_to, pokemonChainArray);
-  else {
-    return;
-  }
-}

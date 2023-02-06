@@ -1,6 +1,8 @@
+import React from "react";
 import { useQuery } from "react-query";
 import { getPokemonDetails, getPokemonSpecie } from "../../apis";
 import { STATS, STAT_COLORS } from "../../constants";
+import { usePokemonChain } from "../../hooks";
 
 import { POKEMON_KEYS } from "../../queryKeys";
 import { Pokemon } from "../../types";
@@ -22,9 +24,14 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
     { enabled: Boolean(selectedPokemon?.id) }
   );
 
+  const pokeChain = usePokemonChain({
+    name: selectedPokemon?.name,
+    id: pokeSpecie.data?.evolution_chain.url.split("/")[6],
+  });
+
   if (!selectedPokemon) return null;
 
-  if (pokemonQuery.isLoading || pokeSpecie.isLoading) {
+  if (pokemonQuery.isLoading || pokeSpecie.isLoading || pokeChain.isLoading) {
     return <aside>loading...</aside>;
   }
 
@@ -158,6 +165,22 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
           <h4 className="font-extrabold pt-4 text-gray-800 text-sm tracking-widest">
             EVOLUTION
           </h4>
+          <div className="flex justify-between items-center gap-2">
+            {pokeChain.pokemonChain?.map((pokemonEvolution) => (
+              <React.Fragment key={pokemonEvolution.name}>
+                {pokemonEvolution.minLevel > 0 && (
+                  <span className="bg-custom-gray-50 text-center text-[11px] font-semibold text-gray-400 py-1.5 w-full px-2 rounded-full">
+                    Lvl {pokemonEvolution.minLevel}
+                  </span>
+                )}
+                <img
+                  className="w-auto h-16"
+                  src={pokemonEvolution?.imageURL}
+                  alt={`${pokemonEvolution.name} picture`}
+                />
+              </React.Fragment>
+            ))}
+          </div>
         </div>
       </div>
     </aside>
