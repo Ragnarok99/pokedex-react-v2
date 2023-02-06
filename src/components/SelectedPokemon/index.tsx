@@ -7,7 +7,12 @@ import {
 } from "../../apis";
 
 import { GetPokemonType, Pokemon } from "../../types";
-import { POKEMON_TYPE_IMAGES, STATS, STAT_COLORS } from "../../constants";
+import {
+  POKEMON_TYPE_COLORS,
+  POKEMON_TYPE_IMAGES,
+  STATS,
+  STAT_COLORS,
+} from "../../constants";
 import { usePokemonChain } from "../../hooks";
 
 import { POKEMON_KEYS } from "../../queryKeys";
@@ -79,7 +84,7 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
   }
 
   return (
-    <aside className="bg-white rounded-2xl px-7 mt-20 flex flex-col items-center col-span-4">
+    <aside className="bg-white rounded-2xl px-7 top-24 sticky h-fit mt-20 flex flex-col items-center col-span-4">
       <div className="-mt-24">
         <img
           className="h-64"
@@ -100,7 +105,13 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
         <ul className="flex pt-1 gap-2 justify-center">
           {pokemonQuery.data?.types.map((type) => (
             <li
-              className={`font-semibold px-3 py-1 rounded-lg text-white text-[11px] uppercase ${type.type.name}`}
+              style={{
+                backgroundColor:
+                  POKEMON_TYPE_COLORS[
+                    type.type.name as keyof typeof POKEMON_TYPE_COLORS
+                  ],
+              }}
+              className={`font-semibold px-3 py-1 rounded-lg text-white text-[11px] uppercase`}
               key={type.type.name}
             >
               <span>{type.type.name}</span>

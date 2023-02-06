@@ -5,6 +5,7 @@ import { getPaginatedPokemons, getPokemonDetails } from "./apis";
 import { POKEMON_KEYS } from "./queryKeys";
 import { Card, SelectedPokemon } from "./components";
 import { Pokemon } from "./types";
+import { POKEMON_TYPE_COLORS } from "./constants";
 
 const App = () => {
   const imagesRef = React.useRef<any[]>([]);
@@ -59,7 +60,14 @@ const App = () => {
                       <ul className="flex gap-2 justify-center">
                         {data?.types.map((type) => (
                           <li
-                            className={`font-semibold px-3 py-1 rounded-lg text-white text-[11px] uppercase ${type.type.name}`}
+                            style={{
+                              backgroundColor:
+                                POKEMON_TYPE_COLORS[
+                                  type.type
+                                    .name as keyof typeof POKEMON_TYPE_COLORS
+                                ],
+                            }}
+                            className={`font-semibold px-3 py-1 rounded-lg text-white text-[11px] uppercase`}
                             key={type.type.name}
                           >
                             {type.type.name}

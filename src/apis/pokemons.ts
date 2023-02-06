@@ -38,7 +38,7 @@ interface GetPaginatedPokemonsResponse {
 }
 
 export const getPaginatedPokemons = async ({
-  limit = 10,
+  limit = 100,
   offset = 0,
 }: GetPaginatedPokemonsArgs = {}) => {
   const response = await pokeClient.get<GetPaginatedPokemonsResponse>(
