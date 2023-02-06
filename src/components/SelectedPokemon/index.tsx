@@ -7,7 +7,7 @@ import {
 } from "../../apis";
 
 import { GetPokemonType, Pokemon } from "../../types";
-import { STATS, STAT_COLORS } from "../../constants";
+import { POKEMON_TYPE_IMAGES, STATS, STAT_COLORS } from "../../constants";
 import { usePokemonChain } from "../../hooks";
 
 import { POKEMON_KEYS } from "../../queryKeys";
@@ -16,17 +16,32 @@ type Props = {
   selectedPokemon?: Pokemon;
 };
 
-interface PokemonTypesQueryArgs {
-  data: GetPokemonType;
-  isLoading: boolean;
-}
-
 function getPokemonWeaknessesFromTypes(
   pokemonTypesQuery: UseQueryResult<GetPokemonType, unknown>[]
 ) {
   const isLoading = pokemonTypesQuery.some((result) => result.isLoading);
 
   if (isLoading) return { isLoading, data: null };
+
+  const types = pokemonTypesQuery.map((type) => {
+    const dblDmgFrom =
+      type.data?.damage_relations.double_damage_from.map(
+        (dblDmgType) => dblDmgType.name
+      ) || [];
+    const halfDmgFrom =
+      type.data?.damage_relations.half_damage_from.map(
+        (halfDmgType) => halfDmgType.name
+      ) || [];
+
+    return [...dblDmgFrom, ...halfDmgFrom];
+  });
+
+  const pokemonWeaknesses = Array.from(new Set(types.flat())).map((type) => ({
+    name: type,
+    color: POKEMON_TYPE_IMAGES[type as keyof typeof POKEMON_TYPE_IMAGES],
+  }));
+
+  return { data: pokemonWeaknesses, isLoading };
 }
 
 export const SelectedPokemon = ({ selectedPokemon }: Props) => {
@@ -140,7 +155,21 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
             </h4>
 
             <div className="bg-custom-gray-50 text-center text-sm font-semibold text-gray-700 py-1.5 w-full pl-6 pr-4 rounded-full">
-              {/* {pokeSpecie.data?.} */}
+              <ul className="flex gap-1 justify-center">
+                <li className="rounded-full bg-gray-500 text-white text-[10px] font-semibold w-6 h-6 flex items-center justify-center">
+                  {Number(weaknesses.data?.length) - 3}x
+                </li>
+                {weaknesses.data
+                  ?.slice(weaknesses?.data.length - 3, weaknesses?.data.length)
+                  ?.map((weakness) => (
+                    <li
+                      key={weakness.name}
+                      className="rounded-full text-white text-[10px] font-semibold w-6 h-6 flex items-center justify-center"
+                    >
+                      <img src={weakness.color} alt="" />
+                    </li>
+                  ))}
+              </ul>
             </div>
           </div>
           <div>
