@@ -84,7 +84,7 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
   }
 
   return (
-    <aside className="bg-white rounded-2xl px-7 top-24 sticky h-fit mt-20 flex flex-col items-center col-span-4">
+    <aside className="h-fit mt-20 lg:mt-0 bg-white rounded-2xl px-7 flex flex-col items-center">
       <div className="-mt-24">
         <img
           className="h-64"
