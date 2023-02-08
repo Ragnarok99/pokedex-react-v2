@@ -84,7 +84,7 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
   }
 
   return (
-    <aside className="h-fit mt-20 lg:mt-0 bg-white rounded-2xl px-7 flex flex-col items-center">
+    <aside className="h-fit mt-20 pb-4 lg:mt-0 bg-white rounded-2xl px-4 flex flex-col items-center">
       <div className="-mt-24">
         <img
           className="h-64"
@@ -127,10 +127,10 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
         <h4 className="font-extrabold pt-4 text-gray-800 text-sm tracking-widest">
           ABILITIES
         </h4>
-        <ul className="flex pt-1 pb-2 items-center justify-center gap-2">
+        <ul className="flex pt-1 pb-2  items-center justify-center gap-2">
           {pokemonQuery.data?.abilities.map((ability) => (
             <li
-              className="bg-custom-gray-50 border text-sm font-semibold text-gray-700 capitalize border-gray-300 py-1.5 w-full text-left pl-6 pr-4 rounded-full"
+              className="bg-custom-gray-50 w-fit text-center border text-sm font-semibold text-gray-700 capitalize border-gray-300 py-1.5 lg:text-left px-4 rounded-full"
               key={ability.ability.name}
             >
               {ability.ability.name.replace("-", " ")}
