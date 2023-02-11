@@ -29,15 +29,15 @@ function getEvolutionChain({
     imageURL: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${
       nextEvolution[0]?.species.url.split("/")[6]
     }.png`,
-    minLevel: nextEvolution[0].evolution_details[0].min_level,
+    minLevel: nextEvolution[0]?.evolution_details[0]?.min_level,
   });
 
-  if (nextEvolution[0].evolves_to?.length === 0) {
+  if (!nextEvolution[0] || nextEvolution[0].evolves_to?.length === 0) {
     return;
   }
 
   getEvolutionChain({
-    nextEvolution: nextEvolution[0].evolves_to,
+    nextEvolution: nextEvolution[0]?.evolves_to,
     evolutionArray,
   });
 }

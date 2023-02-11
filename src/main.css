@@ -15,3 +15,32 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
+
+.pokeball {
+  width: 6px;
+  height: 6px;
+  background-color: white;
+  border-radius: 99999px;
+  box-shadow: 0 0px 0px 3px #ff4e52, 0 0px 0px 7px white;
+  aspect-ratio: 1;
+  position: relative;
+}
+
+.pokeball::after,
+.pokeball::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 3px;
+  background-color: #ff4e52;
+}
+
+.pokeball::after {
+  right: -10px;
+}
+
+.pokeball::before {
+  left: -10px;
+}

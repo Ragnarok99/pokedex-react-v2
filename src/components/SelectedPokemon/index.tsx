@@ -87,6 +87,7 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
     <aside className="h-fit mt-20 pb-4 lg:mt-0 bg-white rounded-2xl px-4 flex flex-col items-center">
       <div className="-mt-24">
         <img
+          loading="lazy"
           className="h-64"
           src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonQuery.data?.id}.png`}
           alt={pokemonQuery?.data?.name}
@@ -177,7 +178,11 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
                       key={weakness.name}
                       className="rounded-full text-white text-[10px] font-semibold w-6 h-6 flex items-center justify-center"
                     >
-                      <img src={weakness.color} alt="" />
+                      <img
+                        loading="lazy"
+                        src={weakness.color}
+                        alt={weakness.name}
+                      />
                     </li>
                   ))}
               </ul>
@@ -242,6 +247,7 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
                   </span>
                 )}
                 <img
+                  loading="lazy"
                   className="w-auto h-16"
                   src={pokemonEvolution?.imageURL}
                   alt={`${pokemonEvolution.name} picture`}

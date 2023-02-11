@@ -61,3 +61,5 @@ export enum POKEMON_TYPE_COLORS {
   unknown = "dark",
   shadow = "dark",
 }
+
+export const TOTAL_POKEMON_COUNT = 1279;

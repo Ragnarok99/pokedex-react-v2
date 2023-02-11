@@ -1,24 +1,64 @@
 import React from "react";
 import { useQueries, useQuery } from "react-query";
-import { XMarkIcon } from "@heroicons/react/20/solid";
+import {
+  ArrowPathIcon,
+  ChevronDownIcon,
+  XMarkIcon,
+} from "@heroicons/react/20/solid";
 import { Dialog, Transition } from "@headlessui/react";
+
+import useMediaQuery from "./hooks/useMediaQuery";
 
 import { getPaginatedPokemons, getPokemonDetails } from "./apis";
 import { Card, SelectedPokemon } from "./components";
-import { POKEMON_TYPE_COLORS } from "./constants";
+import { POKEMON_TYPE_COLORS, TOTAL_POKEMON_COUNT } from "./constants";
 import { POKEMON_KEYS } from "./queryKeys";
 import { Pokemon } from "./types";
-import useMediaQuery from "./hooks/useMediaQuery";
+import { Dropdown } from "./components/Dropdown";
+
+const type = ["Type ", "Kenton ", "Therese ", "Benedict ", "Katelyn "];
+const weaknesses = [
+  "Weaknesses",
+  "Kenton ",
+  "Therese ",
+  "Benedict ",
+  "Katelyn ",
+];
+const ability = ["Ability", "Kenton ", "Therese ", "Benedict ", "Katelyn "];
+const height = ["Height", "Kenton ", "Therese ", "Benedict ", "Katelyn "];
+const weight = ["Weight", "Kenton ", "Therese ", "Benedict ", "Katelyn "];
 
 const App = () => {
   const imagesRef = React.useRef<any[]>([]);
+  const searchTimeoutRef = React.useRef(0);
+  const [search, setSearch] = React.useState("");
+  const [offset, setOffset] = React.useState(0);
+  const [limit, setLimit] = React.useState(10);
   const [selectedPokemon, setSelectedPokemon] = React.useState<Pokemon>();
   const [dialogVisible, setDialogVisible] = React.useState<boolean>(false);
+  const [selectedtype, setSelectedtype] = React.useState(type[0]);
+  const [selectedweaknesses, setSelectedweaknesses] = React.useState(
+    weaknesses[0]
+  );
+  const [selectedability, setSelectedability] = React.useState(ability[0]);
+  const [selectedheight, setSelectedheight] = React.useState(height[0]);
+  const [selectedweight, setSelectedweight] = React.useState(weight[0]);
 
   const isDesktop = useMediaQuery("(min-width:1024px)");
 
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value);
+    searchTimeoutRef?.current && clearTimeout(searchTimeoutRef.current);
+
+    searchTimeoutRef.current = setTimeout(() => {
+      if (search.length > 0 && limit !== TOTAL_POKEMON_COUNT) {
+        setLimit(TOTAL_POKEMON_COUNT);
+      }
+    }, 1000);
+  };
+
   const pokeListQuery = useQuery([POKEMON_KEYS.POKEMON_LIST], () =>
-    getPaginatedPokemons()
+    getPaginatedPokemons({ limit, offset })
   );
 
   const pokeQueries =
@@ -29,17 +69,83 @@ const App = () => {
 
   const pokemonDetails = useQueries(pokeQueries);
 
+  const filteredPokemons = React.useMemo(() => {
+    if (search.length > 0) {
+      return pokemonDetails.filter((pokemon) =>
+        pokemon.data?.name.includes(search)
+      );
+    }
+
+    return pokemonDetails;
+  }, [search, pokemonDetails]);
+
   const isLoading = pokemonDetails.some((result) => result.isLoading);
 
   return (
     <section className="bg-custom-gray-50 min-h-screen">
       <div className="p-4 max-w-7xl m-auto">
-        <div className="grid grid-container gap-6 md:grid-cols-12">
-          <div className="col-span-12 lg:col-span-8 grid w-full grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-16 mt-10">
+        <header className="grid grid-cols-12 gap-6">
+          <div className="grid gap-10 col-span-12 lg:col-span-8">
+            <div className="bg-white flex justify-between px-5 py-4 rounded-xl">
+              <input
+                value={search}
+                onChange={handleSearch}
+                className="outline-none w-full placeholder-gray-400 placeholder:tracking-wide placeholder:font-light placeholder:text-base"
+                placeholder="Search your Pokémon!"
+              />
+              <div className="bg-primary h-10 w-10 rounded-xl flex items-center justify-center">
+                <div className="pokeball pokeball__semi" />
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center gap-0.5">
+                <span className="text-sm font-semibold text-gray-800">
+                  Ascending
+                </span>
+                <ChevronDownIcon className="w-6 h-6" />
+              </div>
+            </div>
+
+            <div className="hidden lg:flex gap-3 items-center">
+              <Dropdown
+                value={selectedtype}
+                onChange={setSelectedtype}
+                options={type}
+              />
+              <Dropdown
+                value={selectedweaknesses}
+                onChange={setSelectedweaknesses}
+                options={weaknesses}
+              />
+              <Dropdown
+                value={selectedability}
+                onChange={setSelectedability}
+                options={ability}
+              />
+              <Dropdown
+                value={selectedheight}
+                onChange={setSelectedheight}
+                options={height}
+              />
+              <Dropdown
+                value={selectedweight}
+                onChange={setSelectedweight}
+                options={weight}
+              />
+
+              <button className="min-w-[40px] h-10 p-3 bg-slate-400 rounded-xl">
+                <ArrowPathIcon className="text-white" />
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <div className="grid gap-6 md:grid-cols-12">
+          <div className="col-span-12 lg:col-span-8 grid w-full grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-16 mt-20">
             {isLoading || pokeListQuery.isLoading ? (
               <>loading...</>
             ) : (
-              pokemonDetails.map(({ data }, index) => (
+              filteredPokemons.map(({ data }, index) => (
                 <Card
                   onClick={() => {
                     setSelectedPokemon(data);
@@ -54,6 +160,7 @@ const App = () => {
                       <img
                         ref={imagesRef?.current[index]}
                         className="m-auto"
+                        loading="lazy"
                         src={
                           data?.sprites.versions?.["generation-v"][
                             "black-white"
@@ -92,7 +199,7 @@ const App = () => {
               ))
             )}
           </div>
-          <div className="hidden lg:block md:col-span-4 top-24 sticky h-fit mt-20">
+          <div className="hidden lg:block md:col-span-4 top-24 sticky h-fit -mt-40">
             <SelectedPokemon selectedPokemon={selectedPokemon} />
           </div>
         </div>
