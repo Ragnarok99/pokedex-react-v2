@@ -1,5 +1,5 @@
 import React from "react";
-import { useQueries, useQuery } from "react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import {
   ArrowPathIcon,
   ChevronDownIcon,
@@ -32,6 +32,7 @@ const App = () => {
   const imagesRef = React.useRef<any[]>([]);
   const searchTimeoutRef = React.useRef(0);
   const [search, setSearch] = React.useState("");
+  const [searchTerm, setSearchTerm] = React.useState("");
   const [offset, setOffset] = React.useState(0);
   const [limit, setLimit] = React.useState(10);
   const [selectedPokemon, setSelectedPokemon] = React.useState<Pokemon>();
@@ -47,39 +48,43 @@ const App = () => {
   const isDesktop = useMediaQuery("(min-width:1024px)");
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(event.target.value);
+    const searchValue = event.target.value;
+    setSearch(searchValue);
     searchTimeoutRef?.current && clearTimeout(searchTimeoutRef.current);
 
+    if (!searchValue && limit === TOTAL_POKEMON_COUNT) {
+      setLimit(10);
+      setSearchTerm("");
+    }
+
     searchTimeoutRef.current = setTimeout(() => {
-      if (search.length > 0 && limit !== TOTAL_POKEMON_COUNT) {
+      if (searchValue.length > 0) {
         setLimit(TOTAL_POKEMON_COUNT);
+        setSearchTerm(searchValue);
       }
     }, 1000);
   };
 
-  const pokeListQuery = useQuery([POKEMON_KEYS.POKEMON_LIST], () =>
-    getPaginatedPokemons({ limit, offset })
+  const pokeListQuery = useQuery(
+    [POKEMON_KEYS.POKEMON_LIST, { limit, offset, search: searchTerm }],
+    () => getPaginatedPokemons({ limit, offset, search: searchTerm })
   );
 
   const pokeQueries =
     pokeListQuery.data?.results.map((pokemon) => ({
       queryKey: [POKEMON_KEYS.POKEMON, pokemon.name],
       queryFn: () => getPokemonDetails({ id: pokemon.url.split("/")[6] }),
+      enabled: Boolean(pokeListQuery.data),
     })) ?? [];
 
-  const pokemonDetails = useQueries(pokeQueries);
+  const pokemonDetails = useQueries({ queries: pokeQueries });
 
-  const filteredPokemons = React.useMemo(() => {
-    if (search.length > 0) {
-      return pokemonDetails.filter((pokemon) =>
-        pokemon.data?.name.includes(search)
-      );
-    }
-
-    return pokemonDetails;
-  }, [search, pokemonDetails]);
-
-  const isLoading = pokemonDetails.some((result) => result.isLoading);
+  const isLoadingPokemonDetails = pokemonDetails.some(
+    (result) => result.isLoading
+  );
+  const isIdlePokemonDetails = pokemonDetails.some(
+    (result) => result.fetchStatus === "idle"
+  );
 
   return (
     <section className="bg-custom-gray-50 min-h-screen">
@@ -142,10 +147,11 @@ const App = () => {
 
         <div className="grid gap-6 md:grid-cols-12">
           <div className="col-span-12 lg:col-span-8 grid w-full grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-16 mt-20">
-            {isLoading || pokeListQuery.isLoading ? (
+            {(isIdlePokemonDetails && isLoadingPokemonDetails) ||
+            isLoadingPokemonDetails ? (
               <>loading...</>
             ) : (
-              filteredPokemons.map(({ data }, index) => (
+              pokemonDetails.map(({ data }, index) => (
                 <Card
                   onClick={() => {
                     setSelectedPokemon(data);

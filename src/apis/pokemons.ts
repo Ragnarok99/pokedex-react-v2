@@ -1,3 +1,4 @@
+import { TOTAL_POKEMON_COUNT } from "../constants";
 import {
   GetPokemonType,
   Pokemon,
@@ -27,6 +28,7 @@ interface GetPokemonTypeArgs {
 
 interface GetPaginatedPokemonsArgs {
   limit?: number;
+  search?: string;
   offset?: number;
 }
 
@@ -40,6 +42,7 @@ interface GetPaginatedPokemonsResponse {
 export const getPaginatedPokemons = async ({
   limit = 100,
   offset = 0,
+  search,
 }: GetPaginatedPokemonsArgs = {}) => {
   const response = await pokeClient.get<GetPaginatedPokemonsResponse>(
     "/pokemon",
@@ -47,6 +50,16 @@ export const getPaginatedPokemons = async ({
       params: { limit, offset },
     }
   );
+
+  if (search && limit === TOTAL_POKEMON_COUNT) {
+    const results = response.data.results.filter((pokemon) =>
+      pokemon.name.toLowerCase().includes(search.toLowerCase())
+    );
+    return {
+      ...response.data,
+      results,
+    };
+  }
 
   return response.data;
 };

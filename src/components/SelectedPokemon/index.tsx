@@ -1,5 +1,5 @@
 import React from "react";
-import { useQueries, useQuery, UseQueryResult } from "react-query";
+import { useQueries, useQuery, UseQueryResult } from "@tanstack/react-query";
 import {
   getPokemonDetails,
   getPokemonSpecie,
@@ -73,7 +73,7 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
       queryFn: () => getPokemonType({ id: type.type.url.split("/")[6] }),
     })) ?? [];
 
-  const pokeTypes = useQueries(queriesTest);
+  const pokeTypes = useQueries({ queries: queriesTest });
 
   const weaknesses = getPokemonWeaknessesFromTypes(pokeTypes);
 
