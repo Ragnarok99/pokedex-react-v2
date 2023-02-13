@@ -1,5 +1,6 @@
 import React from "react";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useInView } from "react-intersection-observer";
+import { useInfiniteQuery, useQueries } from "@tanstack/react-query";
 import {
   ArrowPathIcon,
   ChevronDownIcon,
@@ -29,12 +30,10 @@ const height = ["Height", "Kenton ", "Therese ", "Benedict ", "Katelyn "];
 const weight = ["Weight", "Kenton ", "Therese ", "Benedict ", "Katelyn "];
 
 const App = () => {
+  const { ref, inView } = useInView();
+
   const imagesRef = React.useRef<any[]>([]);
-  const searchTimeoutRef = React.useRef(0);
   const [search, setSearch] = React.useState("");
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [offset, setOffset] = React.useState(0);
-  const [limit, setLimit] = React.useState(10);
   const [selectedPokemon, setSelectedPokemon] = React.useState<Pokemon>();
   const [dialogVisible, setDialogVisible] = React.useState<boolean>(false);
   const [selectedtype, setSelectedtype] = React.useState(type[0]);
@@ -50,34 +49,39 @@ const App = () => {
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = event.target.value;
     setSearch(searchValue);
-    searchTimeoutRef?.current && clearTimeout(searchTimeoutRef.current);
-
-    if (!searchValue && limit === TOTAL_POKEMON_COUNT) {
-      setLimit(10);
-      setSearchTerm("");
-    }
-
-    searchTimeoutRef.current = setTimeout(() => {
-      if (searchValue.length > 0) {
-        setLimit(TOTAL_POKEMON_COUNT);
-        setSearchTerm(searchValue);
-      }
-    }, 1000);
   };
 
-  const pokeListQuery = useQuery(
-    [POKEMON_KEYS.POKEMON_LIST, { limit, offset, search: searchTerm }],
-    () => getPaginatedPokemons({ limit, offset, search: searchTerm })
+  const pokeListQuery = useInfiniteQuery(
+    [POKEMON_KEYS.POKEMON_LIST, { search }],
+    ({ pageParam }) => {
+      return getPaginatedPokemons({ offset: pageParam, search });
+    },
+    {
+      getNextPageParam: (lastPage) => {
+        if (!lastPage.next) return false;
+        const urlParams = new URLSearchParams(
+          lastPage.next?.split("pokemon")[1]
+        );
+
+        console.log("next page", urlParams.get("offset"));
+
+        return Number(urlParams.get("offset"));
+      },
+    }
   );
 
-  const pokeQueries =
-    pokeListQuery.data?.results.map((pokemon) => ({
-      queryKey: [POKEMON_KEYS.POKEMON, pokemon.name],
-      queryFn: () => getPokemonDetails({ id: pokemon.url.split("/")[6] }),
-      enabled: Boolean(pokeListQuery.data),
-    })) ?? [];
+  const detailQueries =
+    pokeListQuery.data?.pages
+      ?.map(({ results }) =>
+        results.map((pokemon) => ({
+          queryKey: [POKEMON_KEYS.POKEMON, pokemon.name],
+          queryFn: () => getPokemonDetails({ id: pokemon.url.split("/")[6] }),
+          enabled: Boolean(pokeListQuery?.data?.pages),
+        }))
+      )
+      .flat() ?? [];
 
-  const pokemonDetails = useQueries({ queries: pokeQueries });
+  const pokemonDetails = useQueries({ queries: detailQueries });
 
   const isLoadingPokemonDetails = pokemonDetails.some(
     (result) => result.isLoading
@@ -85,6 +89,12 @@ const App = () => {
   const isIdlePokemonDetails = pokemonDetails.some(
     (result) => result.fetchStatus === "idle"
   );
+
+  React.useEffect(() => {
+    if (inView) {
+      pokeListQuery.fetchNextPage();
+    }
+  }, [inView]);
 
   return (
     <section className="bg-custom-gray-50 min-h-screen">
@@ -208,6 +218,22 @@ const App = () => {
           <div className="hidden lg:block md:col-span-4 top-24 sticky h-fit -mt-40">
             <SelectedPokemon selectedPokemon={selectedPokemon} />
           </div>
+          <div
+            ref={ref}
+            className={`${
+              !pokeListQuery.hasNextPage ||
+              (isLoadingPokemonDetails && isIdlePokemonDetails)
+                ? "hidden"
+                : ""
+            }`}
+          >
+            {pokeListQuery.isFetchingNextPage ? "Loading more..." : ""}
+          </div>
+          {pokeListQuery.isLoading && <div>loading ...</div>}
+
+          {!pokeListQuery.hasNextPage && !pokeListQuery.isLoading && (
+            <div>wow... those're all pokemon!!</div>
+          )}
         </div>
       </div>
       {!isDesktop && (

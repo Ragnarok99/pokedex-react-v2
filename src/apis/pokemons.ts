@@ -1,4 +1,3 @@
-import { TOTAL_POKEMON_COUNT } from "../constants";
 import {
   GetPokemonType,
   Pokemon,
@@ -9,7 +8,7 @@ import {
 
 import { pokeClient } from "./pokeClient";
 
-// TODO: ALL of these interfaces should be shared and extensible
+// TODO: ALL of these interfaces should be shared and extended
 interface GetPokemonDetailsArgs {
   id?: string | number;
 }
@@ -27,31 +26,34 @@ interface GetPokemonTypeArgs {
 }
 
 interface GetPaginatedPokemonsArgs {
-  limit?: number;
-  search?: string;
   offset?: number;
+  search?: string;
 }
 
 interface GetPaginatedPokemonsResponse {
   results: SinglePokemon[];
-  count?: number;
   next: string | null;
+  count?: number;
   previous: string | null;
 }
 
 export const getPaginatedPokemons = async ({
-  limit = 100,
   offset = 0,
   search,
 }: GetPaginatedPokemonsArgs = {}) => {
+  const itemsPerPage = 30;
+
   const response = await pokeClient.get<GetPaginatedPokemonsResponse>(
     "/pokemon",
     {
-      params: { limit, offset },
+      params: {
+        limit: itemsPerPage,
+        offset,
+      },
     }
   );
 
-  if (search && limit === TOTAL_POKEMON_COUNT) {
+  if (search) {
     const results = response.data.results.filter((pokemon) =>
       pokemon.name.toLowerCase().includes(search.toLowerCase())
     );
