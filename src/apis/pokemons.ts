@@ -6,7 +6,7 @@ import {
   SinglePokemon,
 } from "../types";
 
-import { pokeClient } from "./pokeClient";
+import { pokeClient, pokeGatewayClient } from "./pokeClient";
 
 // TODO: ALL of these interfaces should be shared and extended
 interface GetPokemonDetailsArgs {
@@ -43,25 +43,16 @@ export const getPaginatedPokemons = async ({
 }: GetPaginatedPokemonsArgs = {}) => {
   const itemsPerPage = 30;
 
-  const response = await pokeClient.get<GetPaginatedPokemonsResponse>(
+  const response = await pokeGatewayClient.get<GetPaginatedPokemonsResponse>(
     "/pokemon",
     {
       params: {
+        search,
         limit: itemsPerPage,
         offset,
       },
     }
   );
-
-  if (search) {
-    const results = response.data.results.filter((pokemon) =>
-      pokemon.name.toLowerCase().includes(search.toLowerCase())
-    );
-    return {
-      ...response.data,
-      results,
-    };
-  }
 
   return response.data;
 };

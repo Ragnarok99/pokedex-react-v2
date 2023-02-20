@@ -63,8 +63,6 @@ const App = () => {
           lastPage.next?.split("pokemon")[1]
         );
 
-        console.log("next page", urlParams.get("offset"));
-
         return Number(urlParams.get("offset"));
       },
     }
