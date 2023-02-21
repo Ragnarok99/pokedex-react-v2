@@ -1,4 +1,5 @@
 import React from "react";
+import { VirtuosoGrid } from "react-virtuoso";
 import { useInView } from "react-intersection-observer";
 import { useInfiniteQuery, useQueries } from "@tanstack/react-query";
 import {
@@ -12,7 +13,7 @@ import useMediaQuery from "./hooks/useMediaQuery";
 
 import { getPaginatedPokemons, getPokemonDetails } from "./apis";
 import { Card, SelectedPokemon } from "./components";
-import { POKEMON_TYPE_COLORS, TOTAL_POKEMON_COUNT } from "./constants";
+import { POKEMON_TYPE_COLORS } from "./constants";
 import { POKEMON_KEYS } from "./queryKeys";
 import { Pokemon } from "./types";
 import { Dropdown } from "./components/Dropdown";

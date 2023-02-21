@@ -5,5 +5,5 @@ export const pokeClient = axios.create({
 });
 
 export const pokeGatewayClient = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: "https://poke-api-gateway.onrender.com",
 });

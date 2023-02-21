@@ -41,7 +41,7 @@ export const getPaginatedPokemons = async ({
   offset = 0,
   search,
 }: GetPaginatedPokemonsArgs = {}) => {
-  const itemsPerPage = 30;
+  const itemsPerPage = 10;
 
   const response = await pokeGatewayClient.get<GetPaginatedPokemonsResponse>(
     "/pokemon",
