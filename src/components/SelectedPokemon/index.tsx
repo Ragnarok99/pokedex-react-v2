@@ -137,8 +137,11 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
               return Array.from(test);
             }, [])
             .splice(0, 3)
-            .map((flavorText) => (
-              <p className="font-lato prose text-slate-800 text-base first-letter:capitalize">
+            .map((flavorText, idx) => (
+              <p
+                key={idx}
+                className="font-lato prose text-slate-800 text-base first-letter:capitalize"
+              >
                 <>{flavorText}</>
               </p>
             ))}
@@ -259,9 +262,9 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
           <div className="flex justify-between items-center gap-2">
             {pokeChain.pokemonChain?.map((pokemonEvolution) => (
               <React.Fragment key={pokemonEvolution.name}>
-                {pokemonEvolution.minLevel > 0 && (
+                {pokemonEvolution.trigger && (
                   <span className="bg-custom-gray-50 text-center text-[11px] font-semibold text-gray-400 py-1.5 w-full px-2 rounded-full">
-                    Lvl {pokemonEvolution.minLevel}
+                    {pokemonEvolution.trigger}
                   </span>
                 )}
                 <img

@@ -3,12 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 
 import { getPokemonChain } from "../apis";
 import { POKEMON_KEYS } from "../queryKeys";
-import { Chain } from "../types";
+import { Chain, EvolutionDetail } from "../types";
 
 export interface PokemonChain {
   imageURL: string;
   name: string;
-  minLevel: number;
+  trigger?: string;
 }
 interface UsePokemonEvolutionChainProps {
   name?: string;
@@ -20,6 +20,23 @@ interface GetEvolutionChainArgs {
   evolutionArray: PokemonChain[];
 }
 
+function getEvolutionTrigger(evolutionDetail?: EvolutionDetail) {
+  if (!evolutionDetail) return;
+  if (evolutionDetail.min_level) {
+    return `Lvl ${evolutionDetail.min_level}`;
+  }
+
+  if (evolutionDetail.min_happiness) {
+    return `Happiness ${evolutionDetail.min_happiness}`;
+  }
+
+  if (evolutionDetail.item) {
+    return `${evolutionDetail.item.name}`;
+  }
+
+  return undefined;
+}
+
 function getEvolutionChain({
   nextEvolution,
   evolutionArray,
@@ -29,7 +46,7 @@ function getEvolutionChain({
     imageURL: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${
       nextEvolution[0]?.species.url.split("/")[6]
     }.png`,
-    minLevel: nextEvolution[0]?.evolution_details[0]?.min_level,
+    trigger: getEvolutionTrigger(nextEvolution[0]?.evolution_details[0]),
   });
 
   if (!nextEvolution[0] || nextEvolution[0].evolves_to?.length === 0) {
@@ -58,7 +75,6 @@ export const usePokemonChain = ({
       imageURL: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${
         data?.chain.species.url.split("/")[6]
       }.png`,
-      minLevel: 0,
     },
   ] as PokemonChain[];
 

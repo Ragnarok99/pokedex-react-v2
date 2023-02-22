@@ -35,6 +35,16 @@ export interface Species {
   url: string;
 }
 
+export interface Location {
+  name: string;
+  url: string;
+}
+
+export interface Item {
+  name: string;
+  url: string;
+}
+
 export interface GameIndex {
   game_index: number;
   version: Species;
@@ -264,24 +274,24 @@ export interface Chain {
 }
 
 export interface EvolutionDetail {
-  gender: null;
-  held_item: null;
-  item: null;
-  known_move: null;
-  known_move_type: null;
-  location: null;
-  min_affection: null;
-  min_beauty: null;
-  min_happiness: null;
-  min_level: number;
-  needs_overworld_rain: boolean;
-  party_species: null;
-  party_type: null;
-  relative_physical_stats: null;
-  time_of_day: string;
-  trade_species: null;
-  trigger: Species;
-  turn_upside_down: boolean;
+  gender?: string;
+  held_item?: string;
+  item?: Item;
+  known_move?: string;
+  known_move_type?: string;
+  location?: Location;
+  min_affection?: string;
+  min_beauty?: string;
+  min_happiness?: string;
+  min_level?: number;
+  needs_overworld_rain?: boolean;
+  party_species?: string;
+  party_type?: string;
+  relative_physical_stats?: string;
+  time_of_day?: string;
+  trade_species?: string;
+  trigger?: Species;
+  turn_upside_down?: boolean;
 }
 
 export interface Species {
