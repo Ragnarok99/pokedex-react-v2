@@ -173,7 +173,10 @@ const App = () => {
                       loading="lazy"
                       src={
                         data?.sprites.versions?.["generation-v"]["black-white"]
-                          .animated?.front_default
+                          .animated?.front_default ??
+                        data?.sprites.versions?.["generation-v"]["black-white"]
+                          .front_default ??
+                        `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${data?.id}.png`
                       }
                       alt={`${data?.name} picture`}
                     />
