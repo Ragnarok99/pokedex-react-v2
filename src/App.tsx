@@ -217,7 +217,9 @@ const App = () => {
             ref={ref}
             className={`${
               !pokeListQuery.hasNextPage ||
-              (isLoadingPokemonDetails && isIdlePokemonDetails)
+              (isLoadingPokemonDetails &&
+                isIdlePokemonDetails &&
+                Boolean(search))
                 ? "hidden"
                 : ""
             }`}
@@ -226,9 +228,9 @@ const App = () => {
           </div>
           {pokeListQuery.isLoading && <div>loading ...</div>}
 
-          {!pokeListQuery.hasNextPage && !pokeListQuery.isLoading && (
-            <div>wow... those're all pokemon!!</div>
-          )}
+          {!pokeListQuery.hasNextPage &&
+            !pokeListQuery.isLoading &&
+            !Boolean(search) && <div>wow... those're all pokemon!!</div>}
         </div>
       </div>
       {!isDesktop && (
