@@ -101,7 +101,7 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
           {pokemonQuery.data?.name}
         </span>
         <p className="text-sm text-gray-400">
-          {pokeSpecie.data?.genera[7].genus}
+          {pokeSpecie.data?.genera[7]?.genus}
         </p>
         <ul className="flex pt-1 gap-2 justify-center">
           {pokemonQuery.data?.types.map((type) => (
@@ -122,17 +122,35 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
         <h3 className="font-extrabold py-2 text-gray-800 text-sm tracking-widest">
           POKÉDEX ENTRY
         </h3>
-        <p className="font-lato text-base">
-          {pokeSpecie.data?.flavor_text_entries[7].flavor_text}
-        </p>
+        <div className="grid gap-2">
+          {pokeSpecie.data?.flavor_text_entries
+            ?.filter((flavorText) => flavorText.language.name === "en")
+            .reduce((prev: string[], flavorText) => {
+              const test = new Set([
+                ...prev,
+                flavorText.flavor_text
+                  .toLowerCase()
+                  .replaceAll("\n", " ")
+                  .replaceAll("\f", " ")
+                  .replaceAll("&shy; ", ""),
+              ]);
+              return Array.from(test);
+            }, [])
+            .splice(0, 3)
+            .map((flavorText) => (
+              <p className="font-lato prose text-slate-800 text-base first-letter:capitalize">
+                <>{flavorText}</>
+              </p>
+            ))}
+        </div>
         <h4 className="font-extrabold pt-4 text-gray-800 text-sm tracking-widest">
           ABILITIES
         </h4>
         <ul className="flex pt-1 pb-2  items-center justify-center gap-2">
-          {pokemonQuery.data?.abilities.map((ability) => (
+          {pokemonQuery.data?.abilities.map((ability, idx) => (
             <li
               className="bg-custom-gray-50 w-fit text-center border text-sm font-semibold text-gray-700 capitalize border-gray-300 py-1.5 lg:text-left px-4 rounded-full"
-              key={ability.ability.name}
+              key={idx}
             >
               {ability.ability.name.replace("-", " ")}
             </li>
@@ -234,7 +252,7 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
             </li>
           </ul>
         </div>
-        <div>
+        <div className="grid gap-4">
           <h4 className="font-extrabold pt-4 text-gray-800 text-sm tracking-widest">
             EVOLUTION
           </h4>

@@ -161,7 +161,7 @@ const App = () => {
                   setSelectedPokemon(data);
                   setDialogVisible(true);
                 }}
-                key={data?.id}
+                key={index}
               >
                 <div className="flex items-center h-full pt-8 justify-center flex-col">
                   <div

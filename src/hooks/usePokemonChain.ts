@@ -68,5 +68,10 @@ export const usePokemonChain = ({
       evolutionArray,
     });
 
-  return { pokemonChain: id ? evolutionArray : null, isLoading };
+  return {
+    pokemonChain: id
+      ? evolutionArray.filter((evolution) => evolution.name)
+      : null,
+    isLoading,
+  };
 };
