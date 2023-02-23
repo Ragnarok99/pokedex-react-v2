@@ -155,13 +155,9 @@ const App = () => {
         <div className="grid gap-6 md:grid-cols-12">
           <div className="col-span-12 lg:col-span-8 grid w-full grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-16 mt-20">
             {pokemonDetails.map(({ data, isLoading }, index) => (
-              <>
+              <React.Fragment key={`${index}-pokemon`}>
                 {isLoading ? (
-                  <div
-                    key={`${index}-loading-details`}
-                    role="status"
-                    className="max-w-sm animate-pulse"
-                  >
+                  <div role="status" className="max-w-sm animate-pulse">
                     <div className="h-2.5 bg-gray-200 dark:bg-gray-700 w-48 mb-4 relative min-w-[259px] min-h-[161px] p-4 shadow-sm rounded-2xl" />
                   </div>
                 ) : (
@@ -170,7 +166,6 @@ const App = () => {
                       setSelectedPokemon(data);
                       setDialogVisible(true);
                     }}
-                    key={`${data?.id}-pokemon`}
                   >
                     <div className="flex items-center h-full pt-8 justify-center flex-col">
                       <div
@@ -219,7 +214,7 @@ const App = () => {
                     </div>
                   </Card>
                 )}
-              </>
+              </React.Fragment>
             ))}
           </div>
           <div className="hidden lg:block md:col-span-4 top-24 sticky h-fit -mt-40">
