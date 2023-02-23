@@ -32,7 +32,6 @@ const weight = ["Weight", "Kenton ", "Therese ", "Benedict ", "Katelyn "];
 const App = () => {
   const { ref, inView } = useInView();
 
-  const imagesRef = React.useRef<any[]>([]);
   const [search, setSearch] = React.useState("");
   const [selectedPokemon, setSelectedPokemon] = React.useState<Pokemon>();
   const [dialogVisible, setDialogVisible] = React.useState<boolean>(false);
@@ -155,59 +154,72 @@ const App = () => {
 
         <div className="grid gap-6 md:grid-cols-12">
           <div className="col-span-12 lg:col-span-8 grid w-full grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-16 mt-20">
-            {pokemonDetails.map(({ data }, index) => (
-              <Card
-                onClick={() => {
-                  setSelectedPokemon(data);
-                  setDialogVisible(true);
-                }}
-                key={index}
-              >
-                <div className="flex items-center h-full pt-8 justify-center flex-col">
+            {pokemonDetails.map(({ data, isLoading }, index) => (
+              <>
+                {isLoading ? (
                   <div
-                    className={`absolute flex items-start -top-12 h-[105px]`}
+                    key={`${index}-loading-details`}
+                    role="status"
+                    className="max-w-sm animate-pulse"
                   >
-                    <img
-                      ref={imagesRef?.current[index]}
-                      className="m-auto"
-                      loading="lazy"
-                      src={
-                        data?.sprites.versions?.["generation-v"]["black-white"]
-                          .animated?.front_default ??
-                        data?.sprites.versions?.["generation-v"]["black-white"]
-                          .front_default ??
-                        `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${data?.id}.png`
-                      }
-                      alt={`${data?.name} picture`}
-                    />
+                    <div className="h-2.5 bg-gray-200 dark:bg-gray-700 w-48 mb-4 relative min-w-[259px] min-h-[161px] p-4 shadow-sm rounded-2xl" />
                   </div>
-                  <div className="text-center grid gap-1">
-                    <span className="blck text-xs text-gray-400 mt-3 font-extrabold">
-                      N°{data?.id}
-                    </span>
-                    <span className="mt-2 block text-lg text-gray-800 font-bold capitalize">
-                      {data?.name}
-                    </span>
-                    <ul className="flex gap-2 justify-center">
-                      {data?.types.map((type) => (
-                        <li
-                          style={{
-                            backgroundColor:
-                              POKEMON_TYPE_COLORS[
-                                type.type
-                                  .name as keyof typeof POKEMON_TYPE_COLORS
-                              ],
-                          }}
-                          className={`font-semibold px-3 py-1 rounded-lg text-white text-[11px] uppercase`}
-                          key={type.type.name}
-                        >
-                          {type.type.name}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </Card>
+                ) : (
+                  <Card
+                    onClick={() => {
+                      setSelectedPokemon(data);
+                      setDialogVisible(true);
+                    }}
+                    key={`${data?.id}-pokemon`}
+                  >
+                    <div className="flex items-center h-full pt-8 justify-center flex-col">
+                      <div
+                        className={`absolute flex items-start -top-12 h-[105px]`}
+                      >
+                        <img
+                          className="m-auto"
+                          loading="lazy"
+                          src={
+                            data?.sprites.versions?.["generation-v"][
+                              "black-white"
+                            ].animated?.front_default ??
+                            data?.sprites.versions?.["generation-v"][
+                              "black-white"
+                            ].front_default ??
+                            `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${data?.id}.png`
+                          }
+                          alt={`${data?.name} picture`}
+                        />
+                      </div>
+                      <div className="text-center grid gap-1">
+                        <span className="blck text-xs text-gray-400 mt-3 font-extrabold">
+                          N°{data?.id}
+                        </span>
+                        <span className="mt-2 block text-lg text-gray-800 font-bold capitalize">
+                          {data?.name}
+                        </span>
+                        <ul className="flex gap-2 justify-center">
+                          {data?.types.map((type) => (
+                            <li
+                              style={{
+                                backgroundColor:
+                                  POKEMON_TYPE_COLORS[
+                                    type.type
+                                      .name as keyof typeof POKEMON_TYPE_COLORS
+                                  ],
+                              }}
+                              className={`font-semibold px-3 py-1 rounded-lg text-white text-[11px] uppercase`}
+                              key={type.type.name}
+                            >
+                              {type.type.name}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </Card>
+                )}
+              </>
             ))}
           </div>
           <div className="hidden lg:block md:col-span-4 top-24 sticky h-fit -mt-40">
