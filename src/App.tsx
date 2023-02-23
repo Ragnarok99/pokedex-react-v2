@@ -158,7 +158,7 @@ const App = () => {
               <React.Fragment key={`${index}-pokemon`}>
                 {isLoading ? (
                   <div role="status" className="max-w-sm animate-pulse">
-                    <div className="h-2.5 bg-gray-200 dark:bg-gray-700 w-48 mb-4 relative min-w-[259px] min-h-[161px] p-4 shadow-sm rounded-2xl" />
+                    <div className="bg-gray-200 dark:bg-gray-700 relative min-w-[30px] min-h-[169px] p-4 shadow-sm rounded-2xl" />
                   </div>
                 ) : (
                   <Card
