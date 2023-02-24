@@ -43,7 +43,8 @@ const App = () => {
   const [selectedheight, setSelectedheight] = React.useState(height[0]);
   const [selectedweight, setSelectedweight] = React.useState(weight[0]);
 
-  const isDesktop = useMediaQuery("(min-width:1024px)");
+  const isDesktop = useMediaQuery("(max-width:1024px)");
+  const isMinHeight = useMediaQuery("(min-height:1024px)");
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = event.target.value;
@@ -153,7 +154,11 @@ const App = () => {
         </header>
 
         <div className="grid gap-6 md:grid-cols-12">
-          <div className="col-span-12 lg:col-span-8 grid w-full grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-16 mt-20">
+          <div
+            className={`col-span-12 ${
+              isMinHeight ? "lg:col-span-8" : ""
+            } grid w-full grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-16 mt-20`}
+          >
             {pokemonDetails.map(({ data, isLoading }, index) => (
               <React.Fragment key={`${index}-pokemon`}>
                 {isLoading ? (
@@ -217,7 +222,11 @@ const App = () => {
               </React.Fragment>
             ))}
           </div>
-          <div className="hidden lg:block md:col-span-4 top-24 sticky h-fit -mt-40">
+          <div
+            className={`hidden ${
+              isMinHeight ? "lg:block" : ""
+            } md:col-span-4 top-24 sticky h-fit -mt-40`}
+          >
             <SelectedPokemon selectedPokemon={selectedPokemon} />
           </div>
           <div
@@ -240,12 +249,12 @@ const App = () => {
             !Boolean(search) && <div>wow... those're all pokemon!!</div>}
         </div>
       </div>
-      {!isDesktop && (
+      {(isDesktop || !isMinHeight) && (
         <Transition.Root show={dialogVisible} as={React.Fragment}>
           <Dialog
             as="div"
-            className="relative z-20 lg:hidden"
-            onClose={() => {}}
+            className="relative z-20"
+            onClose={() => setDialogVisible(false)}
           >
             <Transition.Child
               as={React.Fragment}
@@ -291,7 +300,10 @@ const App = () => {
                     </div>
                   </Transition.Child>
                   <div className="h-0 flex-1 overflow-y-auto pt-5 pb-4">
-                    <SelectedPokemon selectedPokemon={selectedPokemon} />
+                    <SelectedPokemon
+                      isMinHeight={!isMinHeight}
+                      selectedPokemon={selectedPokemon}
+                    />
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

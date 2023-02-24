@@ -11,6 +11,11 @@ module.exports = {
       fontFamily: {
         lato: ["Lato"],
       },
+      screens: {
+        custombp: {
+          raw: "screen and (min-height: 120px)",
+        },
+      },
     },
   },
   plugins: [require("@tailwindcss/typography")],

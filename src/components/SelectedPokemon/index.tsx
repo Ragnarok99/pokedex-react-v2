@@ -19,6 +19,7 @@ import { POKEMON_KEYS } from "../../queryKeys";
 
 type Props = {
   selectedPokemon?: Pokemon;
+  isMinHeight?: boolean;
 };
 
 function getPokemonWeaknessesFromTypes(
@@ -49,7 +50,7 @@ function getPokemonWeaknessesFromTypes(
   return { data: pokemonWeaknesses, isLoading };
 }
 
-export const SelectedPokemon = ({ selectedPokemon }: Props) => {
+export const SelectedPokemon = ({ selectedPokemon, isMinHeight }: Props) => {
   const pokemonQuery = useQuery(
     [POKEMON_KEYS.POKEMON, selectedPokemon?.name],
     () => getPokemonDetails({ id: selectedPokemon?.id }),
@@ -84,7 +85,11 @@ export const SelectedPokemon = ({ selectedPokemon }: Props) => {
   }
 
   return (
-    <aside className="h-fit mt-20 pb-4 lg:mt-0 bg-white rounded-2xl px-4 flex flex-col items-center">
+    <aside
+      className={`h-fit mt-20 pb-4 ${
+        !isMinHeight ? "lg:mt-0" : ""
+      } bg-white rounded-2xl px-4 flex flex-col items-center`}
+    >
       <div className="-mt-24">
         <img
           loading="lazy"
