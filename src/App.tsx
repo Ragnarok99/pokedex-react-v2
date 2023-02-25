@@ -44,7 +44,7 @@ const App = () => {
   const [selectedweight, setSelectedweight] = React.useState(weight[0]);
 
   const isDesktop = useMediaQuery("(max-width:1024px)");
-  const isMinHeight = useMediaQuery("(min-height:1024px)");
+  const isMinHeight = useMediaQuery("(min-height:1100px)");
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = event.target.value;
@@ -288,7 +288,7 @@ const App = () => {
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                   >
-                    <div className="absolute top-0 right-0 pt-2">
+                    <div className="absolute top-0 right-2 pt-2">
                       <button
                         type="button"
                         className="ml-1 flex h-10 w-10 m-3 border-gray-300 p-2 border items-center justify-center rounded-lg focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"

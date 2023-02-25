@@ -127,7 +127,7 @@ export const SelectedPokemon = ({ selectedPokemon, isMinHeight }: Props) => {
         <h3 className="font-extrabold py-2 text-gray-800 text-sm tracking-widest">
           POKÉDEX ENTRY
         </h3>
-        <div className="grid gap-2">
+        <div className="grid gap-2 px-2">
           {pokeSpecie.data?.flavor_text_entries
             ?.filter((flavorText) => flavorText.language.name === "en")
             .reduce((prev: string[], flavorText) => {
@@ -194,9 +194,11 @@ export const SelectedPokemon = ({ selectedPokemon, isMinHeight }: Props) => {
 
             <div className="bg-custom-gray-50 text-center text-sm font-semibold text-gray-700 py-1.5 w-full pl-6 pr-4 rounded-full">
               <ul className="flex gap-1 justify-center">
-                <li className="rounded-full bg-gray-500 text-white text-[10px] font-semibold w-6 h-6 flex items-center justify-center">
-                  {Number(weaknesses.data?.length) - 3}x
-                </li>
+                {Number(weaknesses.data?.length) >= 3 && (
+                  <li className="rounded-full bg-gray-500 text-white text-[10px] font-semibold w-6 h-6 flex items-center justify-center">
+                    {Number(weaknesses.data?.length) - 3}x
+                  </li>
+                )}
                 {weaknesses.data
                   ?.slice(weaknesses?.data.length - 3, weaknesses?.data.length)
                   ?.map((weakness) => (
