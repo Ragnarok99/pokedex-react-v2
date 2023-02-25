@@ -165,7 +165,7 @@ const App = () => {
           <div
             className={`col-span-12 ${
               isMinHeight ? "lg:col-span-8" : ""
-            } grid w-full grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-16 mt-20`}
+            } grid w-full h-fit grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-16 mt-20`}
           >
             {pokemonDetails.map(({ data, isLoading }, index) => (
               <React.Fragment key={`${index}-pokemon`}>

@@ -9,7 +9,7 @@ export const Card = ({ children, onClick, ...props }: Props) => {
     <button
       {...props}
       onClick={onClick}
-      className="bg-white h-fit relative min-w-[30px] min-h-[30px] p-4 shadow-sm rounded-2xl"
+      className="bg-white h-full relative min-w-[30px] min-h-[30px] p-4 shadow-sm rounded-2xl"
     >
       {children}
     </button>
