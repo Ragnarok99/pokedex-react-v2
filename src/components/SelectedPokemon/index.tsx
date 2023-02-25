@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { useQueries, useQuery, UseQueryResult } from "@tanstack/react-query";
 import {
   getPokemonDetails,
@@ -85,7 +86,10 @@ export const SelectedPokemon = ({ selectedPokemon, isMinHeight }: Props) => {
   }
 
   return (
-    <aside
+    <motion.aside
+      initial={{ x: 10 }}
+      animate={{ x: 0 }}
+      exit={{ x: 10 }}
       className={`h-fit mt-20 pb-4 ${
         !isMinHeight ? "lg:mt-0" : ""
       } bg-white rounded-2xl px-4 flex flex-col items-center`}
@@ -93,7 +97,7 @@ export const SelectedPokemon = ({ selectedPokemon, isMinHeight }: Props) => {
       <div className="-mt-24">
         <img
           loading="lazy"
-          className="h-64"
+          className="h-56 aspect-square"
           src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonQuery.data?.id}.png`}
           alt={pokemonQuery?.data?.name}
         />
@@ -285,6 +289,6 @@ export const SelectedPokemon = ({ selectedPokemon, isMinHeight }: Props) => {
           </div>
         </div>
       </div>
-    </aside>
+    </motion.aside>
   );
 };
