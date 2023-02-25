@@ -127,7 +127,7 @@ export const SelectedPokemon = ({ selectedPokemon, isMinHeight }: Props) => {
         <h3 className="font-extrabold py-2 text-gray-800 text-sm tracking-widest">
           POKÉDEX ENTRY
         </h3>
-        <div className="grid gap-2 px-2">
+        <div className="grid gap-2">
           {pokeSpecie.data?.flavor_text_entries
             ?.filter((flavorText) => flavorText.language.name === "en")
             .reduce((prev: string[], flavorText) => {

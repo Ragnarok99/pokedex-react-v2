@@ -96,10 +96,14 @@ const App = () => {
 
   return (
     <section className="bg-custom-gray-50 min-h-screen">
-      <div className="p-4 max-w-7xl m-auto">
-        <header className="grid grid-cols-12 gap-6">
-          <div className="grid gap-10 col-span-12 lg:col-span-8">
-            <div className="bg-white flex justify-between px-5 py-4 rounded-xl">
+      <div className="p-4 grid gap-4 max-w-7xl m-auto">
+        <div className="grid gap-6 sticky z-20 top-0  md:grid-cols-12">
+          <div
+            className={`col-span-12 ${
+              isMinHeight ? "lg:col-span-8" : ""
+            } grid w-full gap-x-6 gap-y-16`}
+          >
+            <div className="bg-white flex justify-between px-5 py-4 rounded-xl shadow-md">
               <input
                 value={search}
                 onChange={handleSearch}
@@ -110,6 +114,10 @@ const App = () => {
                 <div className="pokeball pokeball__semi" />
               </div>
             </div>
+          </div>
+        </div>
+        <header className="grid grid-cols-12 gap-6">
+          <div className="grid gap-10 col-span-12 lg:col-span-8">
             <div>
               <div className="flex items-center gap-0.5">
                 <span className="text-sm font-semibold text-gray-800">
