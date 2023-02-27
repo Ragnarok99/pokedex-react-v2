@@ -145,7 +145,7 @@ export const SelectedPokemon = ({ selectedPokemon, isMinHeight }: Props) => {
               ]);
               return Array.from(test);
             }, [])
-            .splice(0, 3)
+            .splice(0, 1)
             .map((flavorText, idx) => (
               <p
                 key={idx}

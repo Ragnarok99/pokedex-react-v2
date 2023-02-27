@@ -76,6 +76,7 @@ const App = () => {
           queryKey: [POKEMON_KEYS.POKEMON, pokemon.name],
           queryFn: () => getPokemonDetails({ id: pokemon.url.split("/")[6] }),
           enabled: Boolean(pokeListQuery?.data?.pages),
+          refetchOnWindowFocus: false,
         }))
       )
       .flat() ?? [];
@@ -272,6 +273,27 @@ const App = () => {
                   )}
                 </motion.div>
               ))}
+              <div>
+                <div
+                  ref={ref}
+                  className={`${
+                    !pokeListQuery.hasNextPage ||
+                    (isLoadingPokemonDetails &&
+                      isIdlePokemonDetails &&
+                      Boolean(search))
+                      ? "hidden"
+                      : "block"
+                  }`}
+                >
+                  {pokeListQuery.isFetchingNextPage ? "Loading more..." : ""}
+                </div>
+
+                {pokeListQuery.isLoading && <div>loading ...</div>}
+
+                {!pokeListQuery.hasNextPage &&
+                  !pokeListQuery.isLoading &&
+                  !Boolean(search) && <div>wow... those're all pokemon!!</div>}
+              </div>
             </AnimatePresence>
           </div>
           <AnimatePresence>
@@ -285,24 +307,6 @@ const App = () => {
               </div>
             )}
           </AnimatePresence>
-          <div
-            ref={ref}
-            className={`${
-              !pokeListQuery.hasNextPage ||
-              (isLoadingPokemonDetails &&
-                isIdlePokemonDetails &&
-                Boolean(search))
-                ? "hidden"
-                : ""
-            }`}
-          >
-            {pokeListQuery.isFetchingNextPage ? "Loading more..." : ""}
-          </div>
-          {pokeListQuery.isLoading && <div>loading ...</div>}
-
-          {!pokeListQuery.hasNextPage &&
-            !pokeListQuery.isLoading &&
-            !Boolean(search) && <div>wow... those're all pokemon!!</div>}
         </div>
       </div>
       {(isDesktop || !isMinHeight) && (
