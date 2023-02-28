@@ -32,6 +32,7 @@ import { Pokemon } from "./types";
 
 const App = () => {
   const { ref, inView } = useInView();
+  const searchRef = React.useRef<number>();
 
   const [search, setSearch] = React.useState("");
   const [querySearch, setQuerySearch] = React.useState("");
@@ -51,6 +52,27 @@ const App = () => {
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = event.target.value;
     setSearch(searchValue);
+
+    if (searchRef.current) {
+      clearTimeout(searchRef.current);
+    }
+
+    searchRef.current = setTimeout(() => {
+      setQuerySearch(searchValue);
+    }, 2000);
+  };
+
+  const handleSubmit = (
+    event: React.FormEvent<HTMLFormElement> & {
+      target: { elements: HTMLFormElement };
+    }
+  ) => {
+    event.preventDefault();
+
+    if (searchRef.current) {
+      clearTimeout(searchRef.current);
+    }
+    setQuerySearch(event.target.elements.search.value);
   };
 
   const pokeListQuery = useInfiniteQuery(
@@ -90,16 +112,6 @@ const App = () => {
   const isIdlePokemonDetails = pokemonDetails.some(
     (result) => result.fetchStatus === "idle"
   );
-
-  const handleSubmit = (
-    event: React.FormEvent<HTMLFormElement> & {
-      target: { elements: HTMLFormElement };
-    }
-  ) => {
-    event.preventDefault();
-    console.log("hola", event.target.elements.search.value);
-    setQuerySearch(event.target.elements.search.value);
-  };
 
   React.useEffect(() => {
     if (inView) {
