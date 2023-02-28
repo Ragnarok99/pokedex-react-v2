@@ -44,3 +44,12 @@
 .pokeball::before {
   left: -10px;
 }
+
+.disabled.pokeball {
+  box-shadow: 0 0px 0px 3px gray, 0 0px 0px 7px white;
+}
+
+.disabled.pokeball:after,
+.disabled.pokeball:before {
+  background-color: gray;
+}

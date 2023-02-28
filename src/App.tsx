@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useInfiniteQuery, useQueries } from "@tanstack/react-query";
 import {
-  ArrowPathIcon,
+  // ArrowPathIcon,
   ChevronDownIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid";
@@ -16,33 +16,34 @@ import { Card, SelectedPokemon } from "./components";
 import { POKEMON_TYPE_COLORS } from "./constants";
 import { POKEMON_KEYS } from "./queryKeys";
 import { Pokemon } from "./types";
-import { Dropdown } from "./components/Dropdown";
+// import { Dropdown } from "./components/Dropdown";
 
-const type = ["Type ", "Kenton ", "Therese ", "Benedict ", "Katelyn "];
-const weaknesses = [
-  "Weaknesses",
-  "Kenton ",
-  "Therese ",
-  "Benedict ",
-  "Katelyn ",
-];
-const ability = ["Ability", "Kenton ", "Therese ", "Benedict ", "Katelyn "];
-const height = ["Height", "Kenton ", "Therese ", "Benedict ", "Katelyn "];
-const weight = ["Weight", "Kenton ", "Therese ", "Benedict ", "Katelyn "];
+// const type = ["Type ", "Kenton ", "Therese ", "Benedict ", "Katelyn "];
+// const weaknesses = [
+//   "Weaknesses",
+//   "Kenton ",
+//   "Therese ",
+//   "Benedict ",
+//   "Katelyn ",
+// ];
+// const ability = ["Ability", "Kenton ", "Therese ", "Benedict ", "Katelyn "];
+// const height = ["Height", "Kenton ", "Therese ", "Benedict ", "Katelyn "];
+// const weight = ["Weight", "Kenton ", "Therese ", "Benedict ", "Katelyn "];
 
 const App = () => {
   const { ref, inView } = useInView();
 
   const [search, setSearch] = React.useState("");
+  const [querySearch, setQuerySearch] = React.useState("");
   const [selectedPokemon, setSelectedPokemon] = React.useState<Pokemon>();
   const [dialogVisible, setDialogVisible] = React.useState<boolean>(false);
-  const [selectedtype, setSelectedtype] = React.useState(type[0]);
-  const [selectedweaknesses, setSelectedweaknesses] = React.useState(
-    weaknesses[0]
-  );
-  const [selectedability, setSelectedability] = React.useState(ability[0]);
-  const [selectedheight, setSelectedheight] = React.useState(height[0]);
-  const [selectedweight, setSelectedweight] = React.useState(weight[0]);
+  // const [selectedtype, setSelectedtype] = React.useState(type[0]);
+  // const [selectedweaknesses, setSelectedweaknesses] = React.useState(
+  //   weaknesses[0]
+  // );
+  // const [selectedability, setSelectedability] = React.useState(ability[0]);
+  // const [selectedheight, setSelectedheight] = React.useState(height[0]);
+  // const [selectedweight, setSelectedweight] = React.useState(weight[0]);
 
   const isDesktop = useMediaQuery("(max-width:1024px)");
   const isMinHeight = useMediaQuery("(min-height:1100px)");
@@ -53,9 +54,9 @@ const App = () => {
   };
 
   const pokeListQuery = useInfiniteQuery(
-    [POKEMON_KEYS.POKEMON_LIST, { search }],
+    [POKEMON_KEYS.POKEMON_LIST, { search: querySearch }],
     ({ pageParam }) => {
-      return getPaginatedPokemons({ offset: pageParam, search });
+      return getPaginatedPokemons({ offset: pageParam, search: querySearch });
     },
     {
       getNextPageParam: (lastPage) => {
@@ -90,6 +91,16 @@ const App = () => {
     (result) => result.fetchStatus === "idle"
   );
 
+  const handleSubmit = (
+    event: React.FormEvent<HTMLFormElement> & {
+      target: { elements: HTMLFormElement };
+    }
+  ) => {
+    event.preventDefault();
+    console.log("hola", event.target.elements.search.value);
+    setQuerySearch(event.target.elements.search.value);
+  };
+
   React.useEffect(() => {
     if (inView) {
       pokeListQuery.fetchNextPage();
@@ -105,45 +116,64 @@ const App = () => {
               isMinHeight ? "lg:col-span-8" : ""
             } grid w-full gap-x-6 gap-y-16`}
           >
-            <div className="bg-white flex justify-between px-5 py-4 rounded-xl shadow-md">
-              <input
-                value={search}
-                onChange={handleSearch}
-                className="outline-none w-full placeholder-gray-400 placeholder:tracking-wide placeholder:font-light placeholder:text-base"
-                placeholder="Search your Pokémon!"
-              />
-              <div className="flex gap-2 items-center">
-                {search && !pokeListQuery.isLoading && (
-                  <button onClick={() => setSearch("")}>
-                    <XMarkIcon className="w-6 fill-slate-500" />
-                  </button>
-                )}
-                {pokeListQuery.isLoading && (
-                  <div role="status">
-                    <svg
-                      aria-hidden="true"
-                      className="inline w-6 h-6 mr-2 text-gray-200 animate-spin fill-primary"
-                      viewBox="0 0 100 101"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
+            <form onSubmit={handleSubmit}>
+              <div className="bg-white flex justify-between px-5 py-4 rounded-xl shadow-md">
+                <input
+                  value={search}
+                  name="search"
+                  onChange={handleSearch}
+                  className="outline-none w-full placeholder-gray-400 placeholder:tracking-wide placeholder:font-light placeholder:text-base"
+                  placeholder="Search your Pokémon!"
+                />
+                <div className="flex gap-2 items-center">
+                  {querySearch && !pokeListQuery.isLoading && (
+                    <button
+                      type="button"
+                      onClick={(e: React.SyntheticEvent) => {
+                        e.preventDefault();
+                        setSearch("");
+                        setQuerySearch("");
+                      }}
                     >
-                      <path
-                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                        fill="currentColor"
-                      />
-                      <path
-                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                        fill="currentFill"
-                      />
-                    </svg>
-                    <span className="sr-only">Loading...</span>
-                  </div>
-                )}
-                <div className="bg-primary h-10 w-10 rounded-xl flex items-center justify-center">
-                  <div className="pokeball pokeball__semi" />
+                      <XMarkIcon className="w-6 fill-slate-500" />
+                    </button>
+                  )}
+                  {pokeListQuery.isLoading && (
+                    <div role="status">
+                      <svg
+                        aria-hidden="true"
+                        className="inline w-6 h-6 mr-2 text-gray-200 animate-spin fill-primary"
+                        viewBox="0 0 100 101"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                          fill="currentFill"
+                        />
+                      </svg>
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  )}
+                  <motion.button
+                    type="submit"
+                    whileTap={{ scale: 0.9 }}
+                    disabled={pokeListQuery.isLoading}
+                    className="bg-primary disabled:bg-gray-500 disabled:cursor-not-allowed h-10 w-10 rounded-xl flex items-center justify-center"
+                  >
+                    <div
+                      className={`pokeball pokeball__semi ${
+                        pokeListQuery.isLoading ? "disabled" : ""
+                      }`}
+                    />
+                  </motion.button>
                 </div>
               </div>
-            </div>
+            </form>
           </div>
         </div>
         <header className="grid grid-cols-12 gap-6">
@@ -157,7 +187,7 @@ const App = () => {
               </div>
             </div>
 
-            <div className="hidden lg:flex gap-3 items-center">
+            {/* <div className="hidden lg:flex gap-3 items-center">
               <Dropdown
                 value={selectedtype}
                 onChange={setSelectedtype}
@@ -187,7 +217,7 @@ const App = () => {
               <button className="min-w-[40px] h-10 p-3 bg-slate-400 rounded-xl">
                 <ArrowPathIcon className="text-white" />
               </button>
-            </div>
+            </div> */}
           </div>
         </header>
 
@@ -280,7 +310,7 @@ const App = () => {
                     !pokeListQuery.hasNextPage ||
                     (isLoadingPokemonDetails &&
                       isIdlePokemonDetails &&
-                      Boolean(search))
+                      Boolean(querySearch))
                       ? "hidden"
                       : "block"
                   }`}
@@ -292,7 +322,9 @@ const App = () => {
 
                 {!pokeListQuery.hasNextPage &&
                   !pokeListQuery.isLoading &&
-                  !Boolean(search) && <div>wow... those're all pokemon!!</div>}
+                  !Boolean(querySearch) && (
+                    <div>wow... those're all pokemon!!</div>
+                  )}
               </div>
             </AnimatePresence>
           </div>

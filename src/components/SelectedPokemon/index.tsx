@@ -69,13 +69,13 @@ export const SelectedPokemon = ({ selectedPokemon, isMinHeight }: Props) => {
     id: pokeSpecie.data?.evolution_chain.url.split("/")[6],
   });
 
-  const queriesTest =
+  const pokemonTypesQueries =
     pokemonQuery.data?.types.map((type) => ({
       queryKey: [POKEMON_KEYS.TYPE, type.type.name],
       queryFn: () => getPokemonType({ id: type.type.url.split("/")[6] }),
     })) ?? [];
 
-  const pokeTypes = useQueries({ queries: queriesTest });
+  const pokeTypes = useQueries({ queries: pokemonTypesQueries });
 
   const weaknesses = getPokemonWeaknessesFromTypes(pokeTypes);
 
