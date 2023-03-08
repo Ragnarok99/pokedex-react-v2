@@ -68,6 +68,9 @@ const App = () => {
     }
   ) => {
     event.preventDefault();
+    const searchValue = event.target.elements.search.value;
+
+    if (!searchValue) return;
 
     if (searchRef.current) {
       clearTimeout(searchRef.current);
@@ -320,9 +323,8 @@ const App = () => {
                   ref={ref}
                   className={`${
                     !pokeListQuery.hasNextPage ||
-                    (isLoadingPokemonDetails &&
-                      isIdlePokemonDetails &&
-                      Boolean(querySearch))
+                    Boolean(querySearch) ||
+                    (isLoadingPokemonDetails && isIdlePokemonDetails)
                       ? "hidden"
                       : "block"
                   }`}
